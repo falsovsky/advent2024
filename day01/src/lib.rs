@@ -17,15 +17,10 @@ pub fn read_input(path: PathBuf) -> (Vec<u32>, Vec<u32>) {
 pub fn solve_part1(program: &(Vec<u32>, Vec<u32>)) -> u32 {
     let mut ls = program.0.clone();
     let mut rs = program.1.clone();
-    ls.sort();
-    rs.sort();
+    ls.sort_unstable();
+    rs.sort_unstable();
     let mut result: u32 = 0;
-    loop {
-        if ls.is_empty() {
-            break;
-        }
-        let l = ls.remove(0);
-        let r: u32 = rs.remove(0);
+    for (l, r) in ls.into_iter().zip(rs.into_iter()) {
         result += match l.cmp(&r) {
             Ordering::Greater => l - r,
             Ordering::Less => r - l,
@@ -36,15 +31,10 @@ pub fn solve_part1(program: &(Vec<u32>, Vec<u32>)) -> u32 {
 }
 
 pub fn solve_part2(program: &(Vec<u32>, Vec<u32>)) -> u32 {
-    let mut ls = program.0.clone();
     let mut result: u32 = 0;
-    loop {
-        if ls.is_empty() {
-            break;
-        }
-        let l = ls.remove(0);
-        let r = program.1.iter().filter(|&&val| val == l).count() as u32;
-        result += l * r;
+    for &l in &program.0 {
+        let count = program.1.iter().filter(|&&val| val == l).count() as u32;
+        result += l * count;
     }
     result
 }
