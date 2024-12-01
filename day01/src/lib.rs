@@ -1,9 +1,10 @@
 use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
 pub fn read_input(path: PathBuf) -> (Vec<u32>, Vec<u32>) {
-    let buffer = fs::read_to_string(path).unwrap();
+    let buffer = fs::read_to_string(path).expect("Path not found");
     let mut left: Vec<u32> = Vec::new();
     let mut right: Vec<u32> = Vec::new();
     for line in buffer.lines() {
@@ -31,10 +32,15 @@ pub fn solve_part1(program: &(Vec<u32>, Vec<u32>)) -> u32 {
 }
 
 pub fn solve_part2(program: &(Vec<u32>, Vec<u32>)) -> u32 {
+    let mut similarity = HashMap::new();
+    for &val in &program.1 {
+        *similarity.entry(val).or_insert(0) += 1;
+    }
     let mut result: u32 = 0;
     for &l in &program.0 {
-        let count = program.1.iter().filter(|&&val| val == l).count() as u32;
-        result += l * count;
+        if let Some(&count) = similarity.get(&l) {
+            result += l * count;
+        }
     }
     result
 }
